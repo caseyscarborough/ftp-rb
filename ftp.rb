@@ -1,4 +1,4 @@
-#!/Users/Casey/.rvm/rubies/ruby-2.0.0-p0/bin/ruby
+#!/Users/Casey/.rvm/rubies/ruby-2.0.0-rc1/bin/ruby
  
 require 'net/ftp'
 require 'highline/import'
@@ -30,10 +30,23 @@ until (user_input == "exit")
 	elsif (user_input.start_with?("cd"))
 		dir = user_input.gsub(/cd /, '')
 		begin
-			ftp.chdir(dir)
+			if(dir.end_with?("/"))
+				ftp.chdir(dir)
+			else
+				ftp.chdir(dir + "/")
+			end
 		rescue
 			puts "Directory does not exist!"
 		end
+	elsif (user_input.start_with?("get"))
+		file = user_input.gsub(/get /, '')
+		begin
+			ftp.get(file)
+		rescue
+			puts "Could not retrieve remote file."
+		end
+	elsif (user_input == "pwd")
+		puts ftp.pwd
 	elsif (user_input == "exit")
 		puts "Closing connection... Goodbye!"
 		abort ftp.close
