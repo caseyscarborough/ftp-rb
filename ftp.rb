@@ -1,5 +1,5 @@
-#!/Users/Casey/.rvm/rubies/ruby-2.0.0-p0/bin/ruby
- 
+#!/usr/bin/env ruby
+
 require 'net/ftp'
 begin
 	require 'highline/import'
@@ -7,6 +7,7 @@ rescue
 	puts "Rubygem highline not found. Password will be shown in plain text."
 end
 
+# This function displays the help menu for the application.
 def display_help
 	abort "Usage: ruby ftp.rb [-?|-h|[user@host]]
 Parameters:
@@ -20,72 +21,81 @@ Once connected the user has the following options:
      cd [directory]       changes to the specified directory
      get [file]           downloads the specified file
      put [file]           uploads the specified file from the local system
-     rm [file]            deletes the specified file
+     rm [file]            deletes the specified file in the current directory
      rename [file] [file] renames the first file to the name of the second file
      exit                 close the ftp connection and exit the application"
 end
 
+# This function opens the connection to the FTP server using the
+# server name, username, and password passed into it.
 def open_connection(server_name, username, password)
-	begin
+	begin # Attempt to open the connection and log in
 		ftp = Net::FTP.open(server_name)
 		ftp.login(username, password)
 		puts ftp.welcome
-	rescue
+	rescue # Catch any errors
 		abort "Unable to access server. Please check credentials."
 	end
 	return ftp
 end
 
-def get_file(dir)
-	begin
+# This function is used to download a remote file to the user's machine.
+def get_file(file)
+	begin # Attempt to retrieve the remote file
 		puts "Retrieving file #{file}..."
 		$ftp.get(file)
 		puts "File successfully retrieved!"
-	rescue
-		puts "Could not retrieve remote file."
+	rescue # Catch any errors
+		puts "Could not retrieve remote file. Check pathname."
 	end
 end
 
+# This function is used to upload a file from the user's local machine.
 def put_file(file)
+	# Check to see if the file exists locally
 	if(File.exist?(file))
-		begin
+		begin # If so, begin uploading the file
 			puts "Uploading file..."
 			$ftp.put(file)
 			puts "File successfully uploaded!"
-		rescue
+		rescue # Catch any errors
 			puts "There was an error trying to upload the file."
 		end
-	else
+	else # If it does not exist, let the user know
 		puts "The specified file does not exist on the local system."
 	end
 end
 
+# This function is used for changing the directory.
 def change_directory(dir)
-	begin
+	begin # If the directory does not end with a '/', add it
 		if(dir.end_with?("/"))
 			$ftp.chdir(dir)
 		else
 			$ftp.chdir(dir + "/")
 		end
-	rescue
+	rescue # Let the user know if the directory doesn't exist
 		puts "Directory does not exist!"
 	end
 end
 
+# This function is for deleting files in the current directory.
 def delete_file(file_to_delete)
 	user_input = ""
+	# Get a list of the files in the current directory
 	list = $ftp.list
-	list.each do |file|
+	list.each do |file| # Check if the file exists
 		if (file.end_with?(file_to_delete))
+			# Prompt the user for confirmation
 			until (user_input == "Y" || user_input == "N")
 				print "Are you sure you want to delete the file? You cannot undo this action. [Y/N]: "
 				user_input = $stdin.gets.strip.upcase
 			end
 			if (user_input == "Y")
-				begin
+				begin # Delete the file
 					$ftp.delete(file_to_delete)
 					puts "File deleted successfully!"
-				rescue
+				rescue # Catch any errors
 					puts "Unable to delete file!"
 				end
 			end
@@ -93,11 +103,13 @@ def delete_file(file_to_delete)
 	end
 end
 
+# This function is for renaming files in the current directory.
 def rename_file(file1, file2)
+	# Get the list of files in the current directory
 	list = $ftp.list
-	list.each do |file|
+	list.each do |file| # Check if it exists
 		if (file.end_with?(file1))
-			begin
+			begin # Rename the file
 				$ftp.rename(file1, file2)
 				prompt
 			rescue
@@ -108,6 +120,9 @@ def rename_file(file1, file2)
 	puts "File #{file1} not found."
 end
 
+# This function is the main prompt for the program, and allows the
+# user to enter their commands. This function ends when the user
+# types 'exit'.
 def prompt
 	user_input = ""
 	until (user_input == "exit")
@@ -147,23 +162,26 @@ def prompt
 	end
 end
 
+# Display the help screen
 if (ARGV[0] == "-?" || ARGV[0] == "-h")
 	display_help
+# Check if the user entered a proper username/hostname combination
 elsif (/[A-Za-z0-9]@[A-Za-z0-9]/.match(ARGV[0]))
 	username_hostname = ARGV[0]
+	# Get the username and hostname
 	username = username_hostname.gsub(/@[A-Za-z0-9]{0,255}.[A-Za-z0-9]{2,4}/, '')
 	hostname = username_hostname.gsub(/[A-Za-z0-9]{0,255}@/, '')
-	begin
+	begin # Retrieve password using highline if available
 		password = ask("#{username_hostname}\'s password: ") { |p| p.echo = false }
-	rescue
+	rescue # If not, retrieve it in plain text
 		print "#{username_hostname}\'s password: "
 		password = $stdin.gets.strip
-	end
+	end # Open the ftp connection
 	$ftp = open_connection(hostname, username, password)
-	if($ftp)
+	if($ftp) # If it was successful, start the prompt
 		prompt
 	end
-else
+else # Illegal action
 	puts "ftp.rb: illegal option -- #{ARGV[0]}"
 	display_help
 end
