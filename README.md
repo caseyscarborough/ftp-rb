@@ -6,19 +6,21 @@ This is a simple FTP application written in Ruby v2.0.0 that allows a user to co
 The program is run by specifying either the help arguments (-? or -h) or by specifying a username and hostname through the command line. If the user runs the program using the help argument, the following dialog is displayed:
 
 <pre>Casey:~$ ruby ftp.rb -?
-Usage: ruby ftp.rb [-?|-h|[user@host]]
+Usage: ruby ftp.rb [-?|-h|[user@host <file>]]
 Parameters:
-     -?           displays the usage information
-     -h           displays the usage information
-     user@host    attempts to make a connection to the specified host
-                  using the username provided
+     -?                displays the usage information
+     -h                displays the usage information
+     user@host         attempts to make a connection to the specified host
+                       using the username provided
+     user@host <file>  connects to the specified host and uploads the 
+                       file if it exists
 Once connected the user has the following options:
      ls                   displays a list of the current directory's contents
      pwd                  displays the path to the current working directory
      cd [directory]       changes to the specified directory
      get [file]           downloads the specified file
      put [file]           uploads the specified file from the local system
-     rm [file]            deletes the specified file
+     rm [file]            deletes the specified file in the current directory
      rename [file] [file] renames the first file to the name of the second file
      exit                 close the ftp connection and exit the application</pre>
 
