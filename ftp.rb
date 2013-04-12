@@ -1,10 +1,23 @@
 #!/usr/bin/env ruby
 
 require 'net/ftp'
+require 'readline'
 begin
 	require 'highline/import'
 rescue
 	puts "Rubygem highline not found. Password will be shown in plain text."
+end
+
+begin
+	# Save the terminal state
+	stty_save = `stty -g`.chomp
+	trap('INT') { system('stty', stty_save); exit }
+rescue
+end
+
+Readline.completion_append_character = " "
+Readline.completion_proc = Proc.new do |str|
+  Dir[str+'*'].grep( /^#{Regexp.escape(str)}/ )
 end
 
 # This function displays the help menu for the application.
@@ -127,9 +140,8 @@ end
 # types 'exit'.
 def prompt
 	user_input = ""
-	until (user_input == "exit")
-		print "ftp > "
-		user_input = $stdin.gets.strip
+	while line = Readline.readline('ftp > ', true)
+		user_input = line
 		if (user_input == "ls")
 			ls = $ftp.list
 			ls.each do |a|
@@ -171,8 +183,8 @@ if (ARGV[0] == "-?" || ARGV[0] == "-h")
 elsif (/[A-Za-z0-9.]@[A-Za-z0-9.]/.match(ARGV[0]))
 	username_hostname = ARGV[0]
 	# Get the username and hostname
-	username = username_hostname.gsub(/@[A-Za-z0-9]{0,255}.[A-Za-z0-9]{2,4}/, '')
-	hostname = username_hostname.gsub(/[A-Za-z0-9]{0,255}@/, '')
+	username = username_hostname.gsub(/@[A-Z0-9-]{0,255}.[A-Za-z]{2,4}/i, '')
+	hostname = username_hostname.gsub(/[A-Z0-9-]{0,255}@/i, '')
 	begin # Retrieve password using highline if available
 		password = ask("#{username_hostname}\'s password: ") { |p| p.echo = false }
 	rescue # If not, retrieve it in plain text
