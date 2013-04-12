@@ -9,12 +9,14 @@ end
 
 # This function displays the help menu for the application.
 def display_help
-	abort "Usage: ruby ftp.rb [-?|-h|[user@host]]
+	abort "Usage: ruby ftp.rb [-?|-h|[user@host <file>]]
 Parameters:
-     -?           displays the usage information
-     -h           displays the usage information
-     user@host    attempts to make a connection to the specified host
-                  using the username provided
+     -?                displays the usage information
+     -h                displays the usage information
+     user@host         attempts to make a connection to the specified host
+                       using the username provided
+     user@host <file>  connects to the specified host and uploads the 
+                       file if it exists
 Once connected the user has the following options:
      ls                   displays a list of the current directory's contents
      pwd                  displays the path to the current working directory
@@ -166,7 +168,7 @@ end
 if (ARGV[0] == "-?" || ARGV[0] == "-h")
 	display_help
 # Check if the user entered a proper username/hostname combination
-elsif (/[A-Za-z0-9]@[A-Za-z0-9]/.match(ARGV[0]))
+elsif (/[A-Za-z0-9.]@[A-Za-z0-9.]/.match(ARGV[0]))
 	username_hostname = ARGV[0]
 	# Get the username and hostname
 	username = username_hostname.gsub(/@[A-Za-z0-9]{0,255}.[A-Za-z0-9]{2,4}/, '')
@@ -178,8 +180,25 @@ elsif (/[A-Za-z0-9]@[A-Za-z0-9]/.match(ARGV[0]))
 		password = $stdin.gets.strip
 	end # Open the ftp connection
 	$ftp = open_connection(hostname, username, password)
-	if($ftp) # If it was successful, start the prompt
-		prompt
+	if (ARGV[1] == nil)
+		if($ftp) # If it was successful, start the prompt
+			prompt
+		end # If the user enters a filename upload the file
+	elsif (/[A-Za-z0-9.!#&_]/.match(ARGV[0]))
+		if ($ftp) # If ftp connection successful, check for file existence
+			if(File.exist?(ARGV[1]))
+				file = ARGV[1]
+				begin # Attempt to upload the file
+					puts "Uploading file..."
+					$ftp.put(file)
+					puts "File successfully uploaded!"
+				rescue
+					abort "Unable to upload file."
+				end
+			else
+				abort "File does not exist on the local system."
+			end
+		end
 	end
 else # Illegal action
 	puts "ftp.rb: illegal option -- #{ARGV[0]}"
