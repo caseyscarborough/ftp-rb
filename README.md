@@ -12,7 +12,7 @@ Parameters:
      -h                displays the usage information
      user@host         attempts to make a connection to the specified host
                        using the username provided
-     user@host <file>  connects to the specified host and uploads the 
+     user@host &lt;file&gt;  connects to the specified host and uploads the 
                        file if it exists
 Once connected the user has the following options:
      ls                   displays a list of the current directory's contents
