@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Ruby FTP Application by caseyscarborough</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/caseyscarborough/ftp-rb">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/caseyscarborough/ftp-rb/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/caseyscarborough/ftp-rb/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Ruby FTP Application</h1>
+          <p>A simple FTP application written in Ruby v2.0.0</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/caseyscarborough">caseyscarborough</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h2>Ruby FTP Application</h2>
+
+<p>This is a simple FTP application written in Ruby v2.0.0 that allows a user to connect to an FTP server and remove, upload, and download files.</p>
+
+<p>The program is run by specifying either the help arguments (-? or -h) or by specifying a username and hostname through the command line. If the user runs the program using the help argument, the following dialog is displayed:</p>
+
+<pre>Casey:~$ ruby ftp.rb -?
+Usage: ruby ftp.rb [-?|-h|[user@host ]]
+Parameters:
+     -?                displays the usage information
+     -h                displays the usage information
+     user@host         attempts to make a connection to the specified host
+                       using the username provided
+     user@host &lt;file&gt;  connects to the specified host and uploads the 
+                       file if it exists
+Once connected the user has the following options:
+     ls                   displays a list of the current directory's contents
+     pwd                  displays the path to the current working directory
+     cd [directory]       changes to the specified directory
+     get [file]           downloads the specified file
+     put [file]           uploads the specified file from the local system
+     rm [file]            deletes the specified file in the current directory
+     rename [file] [file] renames the first file to the name of the second file
+     exit                 close the ftp connection and exit the application</pre>
+
+<p>This dialog gives the user the information that is needed to run the application.</p>
+
+<h2>Logging in and using the application</h2>
+
+<p>To log in and use the application, run the program specifying a username and hostname as the first argument:</p>
+
+<pre>Casey:~$ ruby ftp.rb casey@hostname.com</pre>
+
+<p>You will then be prompted for a password. After authenticating, you then have the ability to use familiar commands such as ls, pwd, cd, rm, etc. See the help display above for more information.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
